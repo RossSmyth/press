@@ -1,6 +1,8 @@
 {
   buildTypstDocument,
   fetchFromGitHub,
+  fira-code,
+  inconsolata,
 }: {
   basic = buildTypstDocument (self: {
     name = "basic";
@@ -15,6 +17,16 @@
     file = "import.typ";
   });
 
+  fonts = buildTypstDocument (self: {
+    name = "fonts";
+    src = ./documents;
+    file = "fonts.typ";
+    fonts = [
+      fira-code
+      inconsolata
+    ];
+  });
+  
   gitImport = buildTypstDocument (self: {
     name = "gitImport";
     src = ./documents;

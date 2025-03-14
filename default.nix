@@ -1,20 +1,16 @@
 universe: final: prev: let
-  inherit (final) lib typst;
+  inherit (final) lib typst symlinkJoin;
 in {
   buildTypstDocument = lib.extendMkDerivation {
     constructDrv = final.stdenvNoCC.mkDerivation;
 
-    excludeDrvArgNames = ["extraPackages"];
+    excludeDrvArgNames = ["extraPackages" "fonts"];
 
     extendDrvArgs = finalAttrs: {
       name ? "${args.pname}-${args.version}",
       src ? null,
-      srcs ? null,
-      preUnpack ? null,
-      postUnpack ? null,
       typstPatches ? [],
       patches ? [],
-      sourceRoot ? null,
       logLevel ? "",
       buildInputs ? [],
       nativeBuildInputs ? [],
@@ -45,11 +41,18 @@ in {
         shString
         paths) ""
       extraPackages;
+
+      fonts = symlinkJoin {
+        name = "typst-fonts";
+        paths = fonts;
+      };
     in {
       nativeBuildInputs = nativeBuildInputs ++ [typst];
       patches = typstPatches ++ patches;
       strictDeps = true;
 
+      env.TYPST_FONT_PATHS = "${fonts}/share/fonts";
+      
       buildPhase =
         args.buildPhase
         or (''
