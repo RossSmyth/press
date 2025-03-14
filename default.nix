@@ -1,5 +1,5 @@
 final: prev: let
-  inherit (final) lib typst;
+  inherit (final) lib typst symlinkJoin;
 
   lock = builtins.fromJSON (builtins.readFile ./flake.lock);
   uniGit = lock.nodes.universe.locked;
@@ -7,22 +7,17 @@ final: prev: let
     url = "https://api.github.com/repos/${uniGit.owner}/${uniGit.repo}/tarball/${uniGit.rev}";
     sha256 = uniGit.narHash;
   };
-  
 in {
   buildTypstDocument = lib.extendMkDerivation {
     constructDrv = final.stdenvNoCC.mkDerivation;
 
-    excludeDrvArgNames = ["extraPackages"];
+    excludeDrvArgNames = ["extraPackages" "fonts"];
 
     extendDrvArgs = finalAttrs: {
       name ? "${args.pname}-${args.version}",
       src ? null,
-      srcs ? null,
-      preUnpack ? null,
-      postUnpack ? null,
       typstPatches ? [],
       patches ? [],
-      sourceRoot ? null,
       logLevel ? "",
       buildInputs ? [],
       nativeBuildInputs ? [],
@@ -53,11 +48,19 @@ in {
         shString
         paths) ""
       extraPackages;
+
+      fontsDrv = symlinkJoin {
+        name = "typst-fonts";
+        paths = fonts;
+        stripPrefix = "/share/fonts";
+      };
     in {
       nativeBuildInputs = nativeBuildInputs ++ [typst];
       patches = typstPatches ++ patches;
       strictDeps = true;
 
+      env.TYPST_FONT_PATHS = "${fontsDrv}";
+      
       buildPhase =
         args.buildPhase
         or (''
