@@ -37,7 +37,7 @@
       # [Optional] The entry-point to the document, default is "main.typ"
       # This is relative to the directory input above.
       # Default: "main.typ"
-      path = "main.typ";
+      file = "main.typ";
       # [Optional] Whether to pull in Typst Universe or not (it is large!)
       # Default: true
       universe = true;

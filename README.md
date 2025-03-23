@@ -27,7 +27,7 @@ document = pkgs.buildTypstDocument {
 
 If you want to use a non-Universe package:
 ```nix
-documents = pkgs.buildTypeDocument {
+documents = pkgs.buildTypstDocument {
   name = "myDoc";
   src = ./.;
   extraPackages = {
