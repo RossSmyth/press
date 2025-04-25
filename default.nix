@@ -2,11 +2,12 @@ final: prev:
 let
   inherit (final)
     lib
-    typst
-    symlinkJoin
     stdenvNoCC
+    buildEnv
     applyPatches
     makeBinaryWrapper
+    callPackage
+    typst
     ;
   inherit (final.xorg) lndir;
 
@@ -27,6 +28,7 @@ in
     excludeDrvArgNames = [
       "extraPackages"
       "fonts"
+      "typstEnv"
     ];
 
     # All the drv args
@@ -38,9 +40,7 @@ in
         verbose ? false,
         meta ? { },
         fonts ? [ ],
-        typstPatches ? [ ],
-        typstUniverse ? true,
-        universePatches ? [ ],
+        typstEnv ? (_: [ ]),
         extraPackages ? { },
         file ? "main.typ",
         format ? "pdf",
@@ -51,30 +51,6 @@ in
         "html"
       ];
       let
-        # Must patch Typst Universe if requested.
-        universe' =
-          let
-            patchedUni =
-              if universePatches == [ ] then
-                universe
-              else
-                applyPatches {
-                  name = "universe-patched";
-                  src = universe;
-                  patches = universePatches;
-                };
-          in
-          symlinkJoin {
-            name = "universe-pkg";
-            paths = [ ];
-            postBuild = ''
-              mkdir -p $out/share/typst/packages/
-
-              ${lib.getExe lndir} -silent ${patchedUni}/packages $out/share/typst/packages/
-              ls -al $out/share/typst/packages
-            '';
-          };
-
         # It is good to allow the user to provide an AttrSet if they want specific namespaces for packages.
         # But also if they provide a list, just throw it in the "local" namespace as the Typst documentation
         # uses that. If they just provide a single package, then do the same thing.
@@ -87,7 +63,7 @@ in
             type = typeOf extraPackages;
             isDrv = (isDerivation extraPackages) || (extraPackages ? outPath);
 
-            userPack = final.callPackage ./src/mkPackage.nix;
+            userPack = callPackage ./src/mkPackage.nix;
           in
           if (type == "set" && !isDrv) then
             # Set key is the namespace.
@@ -127,34 +103,41 @@ in
             ];
 
         # All fonts in nixpkgs should follow this.
-        fontsDrv = final.callPackage ./src/mkFonts.nix { inherit fonts name; };
+        fontsDrv = callPackage ./src/mkFonts.nix { inherit fonts name; };
 
         # Combine all the packages to one drv
-        pkgsDrv = symlinkJoin {
+        pkgsDrv = buildEnv {
           name = name + "-deps";
-          paths = userPackages ++ lib.optionals typstUniverse [ universe' ];
+          paths = userPackages;
         };
 
-        typstWrap = symlinkJoin {
-          name = "typst-wrapped";
-          paths = [ typst ];
-          buildInputs = [ makeBinaryWrapper ];
-          postBuild = ''
-            wrapProgram $out/bin/typst \
-              --set TYPST_FONT_PATHS ${fontsDrv}/share/fonts \
-              --set XDG_DATA_HOME ${pkgsDrv}/share
-          '';
-          meta.mainProgram = "typst";
-        };
+        typstWrap =
+          let
+            typstUni = typst.withPackages typstEnv;
+          in
+          stdenvNoCC.mkDerivation {
+            strictDeps = true;
+            dontUnpack = true;
+            dontConfigure = true;
+            dontInstall = true;
+
+            name = "typst-wrapped";
+            buildInputs = [ makeBinaryWrapper ];
+            buildPhase = ''
+              runHook preBuild
+
+              makeWrapper ${lib.getExe typstUni} $out/bin/typst \
+                --prefix TYPST_FONT_PATHS : ${fontsDrv}/share/fonts \
+                --set TYPST_PACKAGE_PATH ${pkgsDrv}/share
+
+              runHook postBuild
+            '';
+            meta.mainProgram = "typst";
+          };
       in
       {
-        nativeBuildInputs = args.nativeBuildInputs or [ typstWrap ];
+        nativeBuildInputs = args.nativeBuildInputs or [ ] ++ [ typstWrap ];
         strictDeps = true;
-        patches =
-          args.patches or [ ]
-          ++ lib.trivial.warnIf (typstPatches != [ ])
-            "typstPatches is deprecated and will be removed in a future release. Just use the 'patches' attribute."
-            typstPatches;
 
         buildPhase =
           args.buildPhase or ''

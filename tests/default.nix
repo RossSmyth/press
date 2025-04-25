@@ -16,9 +16,9 @@ let
 
   note-meGh = fetchFromGitHub {
     inherit (note-me) rev;
+    hash = note-me.narHash;
     owner = "FlandiaYingman";
     repo = "note-me";
-    hash = "sha256-Bpmdt59Tt4DNBg8G435xccH/W3aYSK+EuaU2ph2uYTY=";
   };
 
   mkTest =
@@ -28,7 +28,6 @@ let
       (
         args
         // {
-          inherit name;
           src = ./documents;
           file = args.file or (self.name + ".typ");
         }
@@ -38,12 +37,11 @@ in
 {
   basic = mkTest {
     name = "basic";
-    typstUniverse = false;
   };
 
   imports = mkTest {
     name = "import";
-    file = "import.typ";
+    typstEnv = p: [ p.note-me ];
   };
 
   fonts = mkTest {
@@ -68,13 +66,6 @@ in
     name = "patch";
     patches = [
       ./patch.patch
-    ];
-  };
-
-  patchUni = mkTest {
-    name = "patchUni";
-    universePatches = [
-      ./universe.patch
     ];
   };
 

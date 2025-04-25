@@ -1,19 +1,11 @@
 {
   description = "A helper for building Typst document and importing non-Universe packages";
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-
-    universe = {
-      url = "github:typst/packages/main";
-      flake = false;
-    };
-  };
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
   outputs =
     {
       self,
       nixpkgs,
-      universe,
     }:
     let
       overlay = import ./.;
@@ -57,7 +49,7 @@
               in
               [
                 p.nil
-                p.alejandra
+                p.nixfmt-tree
                 p.typstyle
               ];
           };
