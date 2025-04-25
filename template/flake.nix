@@ -43,12 +43,18 @@
         # This is relative to the directory input above.
         # Default: "main.typ"
         file = "main.typ";
-        # [Optional] Whether to pull in Typst Universe or not (it is large!)
-        # Default: true
-        # If used in a flake this won't effect whether Typst Universe is copied
-        # to the store or not. It will effect whether it is symlinked to the
-        # rest of the dependencies though.
-        universe = true;
+        # [Optional] Typst universe package selection
+        #
+        # Pass in a function that accept an attrset of Typst pacakges,
+        # and returns a list of packages.
+        #
+        # The input parameter is from the pkgs.typstPackages attributes
+        # in nixpkgs. See this section of the nixpkgs reference for patching
+        # and overriding
+        # https://nixos.org/manual/nixpkgs/unstable/#typst
+        #
+        # Default: (_: [])
+        typstEnv = (p: [ p.note-me ]);
         # [Optional] Any non-universe packages. The attribute key is the namespace.
         # The package must have a typst.toml file in its root.
         # Default: {}
@@ -66,10 +72,6 @@
         fonts = [
           pkgs.roboto
         ];
-        # [Optional] Patches to the Typst Universe repo
-        # To apply a patch, it much be a patch to the entire Typst Packages repo.
-        # Default: []
-        universePatches = [ ];
       };
 
       devShells.${system}.default = pkgs.mkShell {

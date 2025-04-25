@@ -2,9 +2,9 @@
   fonts,
   name,
 
-  symlinkJoin,
+  buildEnv,
 }:
-symlinkJoin {
+buildEnv {
   name = name + "-fonts";
   paths = fonts;
 }

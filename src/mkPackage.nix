@@ -15,7 +15,7 @@ in
 symlinkJoin {
   name = name + "-typstPkg";
   paths = [
-    src
+    "${src}"
   ];
   postBuild = ''
     shopt -s extglob
