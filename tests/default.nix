@@ -180,4 +180,9 @@ in
       "1.4"
     ];
   };
+
+  timestamp = mkTest {
+    name = "timestamp";
+    creationTimestamp = 1;
+  };
 }

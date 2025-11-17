@@ -66,6 +66,13 @@
         extraPackages = {
           local = [ unify ];
         };
+        # [Optional] A timestamp representing the current date when using `datetime.today()`.
+        #
+        # Accept a Unix timestamp. When not set, is the value of `SOURCE_DATE_EPOCH`, which in
+        # Nixpkgs builds is `315532800` by default.
+        #
+        # In a flake can be set to `self.lastModified` to get the git timestamp
+        creationTimestamp = self.lastModified;
         # [Optional] The format to output
         # Default: "pdf"
         # Can be either "pdf", "html", "svg", or "png"

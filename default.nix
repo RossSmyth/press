@@ -39,6 +39,7 @@ in
       {
         name ? "${args.pname}-${args.version}",
         verbose ? false,
+        creationTimestamp ? null,
         meta ? { },
         fonts ? [ ],
         typstEnv ? (_: [ ]),
@@ -156,6 +157,10 @@ in
         ++ lib.optionals (pdfStandards != [ ]) [
           "--pdf-standard"
           (lib.concatStringsSep "," pdfStandards)
+        ]
+        ++ lib.optionals (creationTimestamp != null) [
+          "--creation-timestamp"
+          (builtins.toString creationTimestamp)
         ]
         ++ [
           "-f"
