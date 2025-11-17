@@ -33,6 +33,7 @@ in
       {
         name ? "${args.pname}-${args.version}",
         verbose ? false,
+        creationTimestamp ? null,
         meta ? { },
         fonts ? [ ],
         typstEnv ? (_: [ ]),
@@ -106,6 +107,8 @@ in
               lib.concatStringsSep " " (
                 lib.mapAttrsToList (name: value: "--input ${name}=${lib.escapeShellArg value}") inputs
               )
+            } ${
+               lib.optionalString (creationTimestamp != null) "--creation-timestamp ${builtins.toString creationTimestamp}"
             } -f ${format} $out
 
             runHook postBuild

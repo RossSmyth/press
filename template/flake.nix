@@ -66,6 +66,9 @@
         extraPackages = {
           local = [ unify ];
         };
+        # [Optional] A timestamp representing the current date when using `datetime.today()`.
+        # Use below for reproducible builds, represents timestamp of the latest git commit.
+        creationTimestamp = self.lastModified;
         # [Optional] The format to output
         # Default: "pdf"
         # Can be either "pdf" or "html"
