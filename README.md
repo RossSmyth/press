@@ -10,6 +10,15 @@ A library for building Typst documents with Nix. Goals:
 5. Supports key-values inputs (Typst's `sys.inputs` dictionary)
 6. Nixpkg's fonts
 
+## Quickstart
+
+```bash
+mkdir my-typst-document
+cd my-typst-document
+nix flake init --template github:RossSmyth/press
+nix build
+```
+
 ## Status
 
 Basically done. In "maintenence mode". Let me know if you find any issues or have feature requests.
