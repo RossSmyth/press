@@ -52,7 +52,10 @@ in
         "svg"
         "png"
       ]) "Typst supports pdf, png, svg, and png output formats.";
+
       let
+
+        # Setup all the packages
         userPackages =
           let
             inherit (builtins) typeOf;
@@ -79,6 +82,8 @@ in
         };
         typstUni = typst.withPackages typstEnv;
 
+        # A wrapped Typst compiler, this is needed for
+        # the dev shell
         typstWrap = stdenvNoCC.mkDerivation {
           strictDeps = true;
           dontUnpack = true;
@@ -98,21 +103,48 @@ in
           '';
           meta.mainProgram = "typst";
         };
+
+        # Put the inputs in the right format
+        typstInputs = lib.pipe inputs [
+          (lib.mapAttrsToList (
+            name: value: [
+              "--input"
+              "${name}=${value}"
+            ]
+          ))
+          lib.flatten
+        ];
       in
       {
-        nativeBuildInputs = args.nativeBuildInputs or [ ] ++ [ typstWrap ];
+        # The good stuff
         strictDeps = true;
+        __structuredAttrs = true;
+
+        nativeBuildInputs = args.nativeBuildInputs or [ ] ++ [ typstWrap ];
+
+        typstArgs = [
+          "c"
+          file
+        ]
+        ++ lib.optionals verbose [
+          "--verbose"
+        ]
+        ++ lib.optionals (format == "html") [
+          "--features"
+          "html"
+        ]
+        ++ typstInputs
+        ++ [
+          "-f"
+          format
+        ];
+
         buildPhase =
           args.buildPhase or ''
             runHook preBuild
 
-            typst c ${file} ${lib.optionalString verbose "--verbose"} ${
-              lib.optionalString (format == "html") "--features html"
-            } ${
-              lib.concatStringsSep " " (
-                lib.mapAttrsToList (name: value: "--input ${name}=${lib.escapeShellArg value}") inputs
-              )
-            } -f ${format} $out
+            echo "Calling Typst with 'typst ''${typstArgs[@]}'"
+            typst "''${typstArgs[@]}" $out
 
             runHook postBuild
           '';
@@ -122,6 +154,9 @@ in
           export TYPST_PACKAGE_PATH="${pkgsDrv}/share/typst/packages"
           export TYPST_FONT_PATHS="${fontsDrv}/share/fonts"
         '';
+
+        # Allow the user to access the wrapped Typst compiler
+        passthru.typst-wrapped = typstWrap;
 
         meta = meta // {
           badPlatforms = meta.badPlatforms or [ ] ++ typst.badPlatforms or [ ];
