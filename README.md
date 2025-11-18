@@ -53,6 +53,7 @@ Recommended by extending the Nixpkgs typstPackages package set:
 let
 pkgs = import nixpkgs {
   overlays = [
+    (import press)
     (final: prev:
       typstPackages = typstPackages.overrideScope (prevTypst: {
         coolPackage = prev.buildTypstPackage {
