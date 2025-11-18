@@ -1,4 +1,5 @@
 {
+  lib,
   buildTypstDocument,
   fetchFromGitHub,
   fira-code,
@@ -23,18 +24,21 @@ let
     repo = "note-me";
   };
 
-  mkTest =
-    { name, ... }@args:
-    buildTypstDocument (
-      self:
-      (
-        args
-        // {
-          src = ./documents;
-          file = args.file or (self.name + ".typ");
-        }
-      )
-    );
+  mkTest = lib.extendMkDerivation {
+    constructDrv = buildTypstDocument;
+
+    extendDrvArgs =
+      finalAttrs:
+      {
+        name,
+        file ? finalAttrs.name + ".typ",
+        ...
+      }@args:
+      {
+        inherit file;
+        src = ./documents;
+      };
+  };
 in
 {
   basic = mkTest {
