@@ -5,6 +5,7 @@
   inconsolata,
   ripgrep,
   qpdf,
+  imagemagick,
 }:
 let
   note-me = fetchTree {
@@ -152,6 +153,19 @@ in
         echo "Number of pages detected: $numPages"
         exit 1
       fi
+    '';
+  };
+
+  ppi = mkTest {
+    name = "png-ppi";
+    file = "basic.typ";
+    format = "png";
+    pngPpi = 100;
+    doCheck = true;
+    nativeCheckInputs = [ imagemagick ];
+    # Hardcoded resolution since Typst does not set the units
+    checkPhase = ''
+      identify -verbose "$out" | grep 1169
     '';
   };
 }

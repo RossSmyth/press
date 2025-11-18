@@ -28,6 +28,7 @@ in
       "format"
       "pages"
       "pdfTags"
+      "pngPpi"
     ];
 
     # All the drv args
@@ -46,6 +47,7 @@ in
         format ? "pdf",
         pages ? [ ],
         pdfTags ? true,
+        pngPpi ? null,
         ...
       }@args:
 
@@ -128,7 +130,7 @@ in
 
         typstArgs = [
           "c"
-          file
+          "${file}"
         ]
         ++ lib.optionals verbose [
           "--verbose"
@@ -144,6 +146,10 @@ in
         ]
         ++ lib.optionals (!pdfTags) [
           "--no-pdf-tags"
+        ]
+        ++ lib.optionals (pngPpi != null) [
+          "--ppi"
+          (builtins.toString pngPpi)
         ]
         ++ [
           "-f"

@@ -96,6 +96,12 @@
         # By default true. If `false`, then no tags will be
         # emitted in the PDF document
         pdfTags = true;
+        # [Optional, string/int]
+        # By default 144 ppi
+        # > The PPI (pixels per inch) to use for PNG export
+        #
+        # Not useful if PNG is not used
+        pngPpi = 144;
       };
 
       devShells.${system}.default = pkgs.mkShellNoCC {
