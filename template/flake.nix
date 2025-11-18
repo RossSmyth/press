@@ -68,7 +68,7 @@
         };
         # [Optional] The format to output
         # Default: "pdf"
-        # Can be either "pdf" or "html"
+        # Can be either "pdf", "html", "svg", or "png"
         format = "pdf";
         # [Optional] The fonts to include in the build environment
         # Note that they must follow the standard of nixpkgs placing fonts

@@ -72,6 +72,39 @@ in
   html = mkTest {
     name = "html";
     format = "html";
+    doCheck = true;
+    checkPhase = ''
+      set -eu
+      grep "html" "$out"
+    '';
+  };
+
+  png = mkTest {
+    name = "png";
+    file = "html.typ";
+    format = "png";
+    doCheck = true;
+    checkPhase = ''
+      set -eu
+      mime=
+      mime=$(file -b --mime-type "$out")
+
+      if [[ $mime != "image/png" ]]; then
+        echo "mime is: $mime"
+        exit 1
+      fi
+    '';
+  };
+
+  svg = mkTest {
+    name = "svg";
+    file = "html.typ";
+    format = "svg";
+    doCheck = true;
+    checkPhase = ''
+      set -eu
+      grep "svg" "$out"
+    '';
   };
 
   gitImport = mkTest {

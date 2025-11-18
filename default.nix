@@ -42,10 +42,14 @@ in
         format ? "pdf",
         ...
       }@args:
+
+      # Everything Typst supports
       assert assertMsg (builtins.elem format [
         "pdf"
         "html"
-      ]) "Typst only supports html or pdf output.";
+        "svg"
+        "png"
+      ]) "Typst supports pdf, png, svg, and png output formats.";
       let
         userPackages =
           let
