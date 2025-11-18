@@ -47,6 +47,33 @@ document = pkgs.buildTypstDocument {
 
 
 If you want to use a non-Universe package:
+
+Recommended by extending the Nixpkgs typstPackages package set:
+```nix
+let
+pkgs = import nixpkgs {
+  overlays = [
+    (final: prev:
+      typstPackages = typstPackages.overrideScope (prevTypst: {
+        coolPackage = prev.buildTypstPackage {
+          pname = "cool-package";
+          version = "1.0";
+          src = coolPackageSrc;
+          typstDeps = [ prevTypst.note-me ];
+        }; 
+      })
+    )
+  ];
+};
+in
+pkgs.buildTypstDocument {
+  name = "myDoc";
+  src = ./.;
+  typstEnv = p: [ p.treet p.coolPackage ];
+} 
+```
+Or you can also use them directly, or if you want them in a custom namespace.
+
 ```nix
 documents = pkgs.buildTypstDocument {
   name = "myDoc";
