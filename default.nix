@@ -29,6 +29,7 @@ in
       "pages"
       "pdfTags"
       "pngPpi"
+      "pdfStandards"
     ];
 
     # All the drv args
@@ -48,6 +49,7 @@ in
         pages ? [ ],
         pdfTags ? true,
         pngPpi ? null,
+        pdfStandards ? [ ],
         ...
       }@args:
 
@@ -150,6 +152,10 @@ in
         ++ lib.optionals (pngPpi != null) [
           "--ppi"
           (builtins.toString pngPpi)
+        ]
+        ++ lib.optionals (pdfStandards != [ ]) [
+          "--pdf-standard"
+          (lib.concatStringsSep "," pdfStandards)
         ]
         ++ [
           "-f"

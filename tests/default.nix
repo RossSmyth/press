@@ -168,4 +168,12 @@ in
       identify -verbose "$out" | grep 1169
     '';
   };
+
+  standards = mkTest {
+    name = "pdf-standards";
+    file = "basic.typ";
+    pdfStandards = [
+      "1.4"
+    ];
+  };
 }

@@ -102,6 +102,13 @@
         #
         # Not useful if PNG is not used
         pngPpi = 144;
+        # [Optional, List String]
+        # The PDF standard to follow.
+        #
+        # See Typst documentation for valid inputs.
+        #
+        # Not useful if PDF is not used
+        pdfStandards = [ ];
       };
 
       devShells.${system}.default = pkgs.mkShellNoCC {
