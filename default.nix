@@ -17,13 +17,15 @@ in
     # No need for CC here
     constructDrv = stdenvNoCC.mkDerivation;
 
-    # IDK exactly but at least extraPackages is required
-    # or things break.
+    # No need to expose really anything.
     excludeDrvArgNames = [
-      "extraPackages"
+      "verbose"
       "fonts"
       "typstEnv"
+      "extraPackages"
+      "file"
       "inputs"
+      "format"
     ];
 
     # All the drv args
