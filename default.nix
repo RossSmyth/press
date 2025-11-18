@@ -27,6 +27,7 @@ in
       "inputs"
       "format"
       "pages"
+      "pdfTags"
     ];
 
     # All the drv args
@@ -44,6 +45,7 @@ in
         inputs ? { },
         format ? "pdf",
         pages ? [ ],
+        pdfTags ? true,
         ...
       }@args:
 
@@ -139,6 +141,9 @@ in
         ++ lib.optionals (pages != [ ]) [
           "--pages"
           (lib.concatStringsSep "," pages)
+        ]
+        ++ lib.optionals (!pdfTags) [
+          "--no-pdf-tags"
         ]
         ++ [
           "-f"

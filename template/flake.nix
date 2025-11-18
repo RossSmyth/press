@@ -92,6 +92,10 @@
         # Export pages 2, 3 through 6 (inclusive), and then page 8 and any pages after
         # pages = [ "2" "3-6" "8-" ]
         pages = [ ];
+        # [Optional, bool]
+        # By default true. If `false`, then no tags will be
+        # emitted in the PDF document
+        pdfTags = true;
       };
 
       devShells.${system}.default = pkgs.mkShellNoCC {
