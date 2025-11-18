@@ -4,6 +4,7 @@
   fira-code,
   inconsolata,
   ripgrep,
+  qpdf,
 }:
 let
   note-me = fetchTree {
@@ -137,4 +138,20 @@ in
     };
   };
 
+  pages = mkTest {
+    name = "pages";
+    pages = [
+      "1"
+      "3-6"
+    ];
+    doCheck = true;
+    nativeCheckInputs = [ qpdf ];
+    checkPhase = ''
+      numPages=$(qpdf --show-npages "$out")
+      if [[ $numPages != "5" ]]; then
+        echo "Number of pages detected: $numPages"
+        exit 1
+      fi
+    '';
+  };
 }

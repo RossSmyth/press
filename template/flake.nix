@@ -80,6 +80,18 @@
         # [Optional] Whether to have a verbose Typst compilation session
         # Default: false
         verbose = false;
+        # [Optional, String]
+        # Pages to export. See Typst documentation for the format. Automatically
+        # inserts commas.
+        #
+        # Examples:
+        #
+        # Only export pages 2 and 5
+        # pages = [ "2" "5" ];
+        #
+        # Export pages 2, 3 through 6 (inclusive), and then page 8 and any pages after
+        # pages = [ "2" "3-6" "8-" ]
+        pages = [ ];
       };
 
       devShells.${system}.default = pkgs.mkShellNoCC {

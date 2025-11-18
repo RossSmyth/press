@@ -26,6 +26,7 @@ in
       "file"
       "inputs"
       "format"
+      "pages"
     ];
 
     # All the drv args
@@ -42,6 +43,7 @@ in
         file ? "main.typ",
         inputs ? { },
         format ? "pdf",
+        pages ? [ ],
         ...
       }@args:
 
@@ -134,6 +136,10 @@ in
           "html"
         ]
         ++ typstInputs
+        ++ lib.optionals (pages != [ ]) [
+          "--pages"
+          (lib.concatStringsSep "," pages)
+        ]
         ++ [
           "-f"
           format
