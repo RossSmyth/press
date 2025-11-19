@@ -181,6 +181,7 @@ in
           export TYPST_PACKAGE_CACHE_PATH="${typstUni}/lib/typst/packages"
           export TYPST_PACKAGE_PATH="${pkgsDrv}/share/typst/packages"
           export TYPST_FONT_PATHS="${fontsDrv}/share/fonts"
+          export SOURCE_DATE_EPOCH=${if creationTimestamp != null then builtins.toString creationTimestamp else "315532800"}
         '';
 
         # Allow the user to access the wrapped Typst compiler
