@@ -64,12 +64,12 @@ pkgs = import nixpkgs {
   overlays = [
     (import press)
     (final: prev:
-      typstPackages = typstPackages.overrideScope (prevTypst: {
-        coolPackage = prev.buildTypstPackage {
+      typstPackages = prev.typstPackages.extend (finalTypst: _: {
+        cool-package = final.buildTypstPackage {
           pname = "cool-package";
           version = "1.0";
           src = coolPackageSrc;
-          typstDeps = [ prevTypst.note-me ];
+          typstDeps = [ finalTypst.note-me ];
         }; 
       })
     )
@@ -79,7 +79,7 @@ in
 pkgs.buildTypstDocument {
   name = "myDoc";
   src = ./.;
-  typstEnv = p: [ p.treet p.coolPackage ];
+  typstEnv = p: [ p.treet p.cool-package ];
 } 
 ```
 Or you can also use them directly, or if you want them in a custom namespace.
