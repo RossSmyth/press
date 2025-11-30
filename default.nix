@@ -172,7 +172,7 @@ in
             runHook preBuild
 
             echo "Calling Typst with 'typst ''${typstArgs[@]}'"
-            typst "''${typstArgs[@]}" $out
+            typst "''${typstArgs[@]}" --root $PWD $out
 
             runHook postBuild
           '';
