@@ -1,11 +1,11 @@
 {
   lib,
+  pkgsBuildBuild,
   callPackage,
   buildEnv,
   stdenvNoCC,
   applyPatches,
   makeBinaryWrapper,
-  typst,
   mkPackage,
   mkFonts,
   mkUserPackages,
@@ -106,7 +106,10 @@ lib.extendMkDerivation {
           inherit userPackages;
         };
         # With nixpkgs typstPackages packages
-        typst = typst.withPackages typstEnv;
+        # Typst does not have target, so we just use the build platform's Typst so
+        # it never tries to do anything weird like fail to build a PDF when targeting
+        # something.
+        typst = pkgsBuildBuild.typst.withPackages typstEnv;
       };
 
       # Put the inputs in the right format
@@ -184,8 +187,8 @@ lib.extendMkDerivation {
       passthru.typst-wrapped = typstWrapped;
 
       meta = meta // {
-        badPlatforms = meta.badPlatforms or [ ] ++ typst.badPlatforms or [ ];
-        platforms = lib.intersectLists meta.platforms or lib.platforms.all typst.meta.platforms or [ ];
+        # bruh it's a PDF
+        platforms = lib.platforms.all;
       };
     };
 }
