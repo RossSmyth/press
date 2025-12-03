@@ -53,15 +53,6 @@ lib.extendMkDerivation {
       pdfStandards ? [ ],
       ...
     }@args:
-
-    # Everything Typst supports
-    assert assertMsg (builtins.elem format [
-      "pdf"
-      "html"
-      "svg"
-      "png"
-    ]) "Typst supports pdf, png, svg, and png output formats.";
-
     let
 
       # Setup all the packages
