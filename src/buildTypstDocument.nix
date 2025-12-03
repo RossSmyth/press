@@ -38,7 +38,6 @@ lib.extendMkDerivation {
   extendDrvArgs =
     finalAttrs:
     {
-      name ? "${args.pname}-${args.version}",
       verbose ? false,
       creationTimestamp ? null,
       meta ? { },
@@ -52,6 +51,7 @@ lib.extendMkDerivation {
       pdfTags ? true,
       pngPpi ? null,
       pdfStandards ? [ ],
+      nativeBuildInputs ? [ ],
       ...
     }@args:
     let
@@ -89,11 +89,13 @@ lib.extendMkDerivation {
       typstWrapped = wrapTypst {
         inherit creationTimestamp;
         fonts = mkFonts {
-          inherit fonts name;
+          inherit (finalAttrs) name;
+          inherit fonts;
         };
         # User-defined Typst packages, not using pkgs.typstPackages
         userPackages = mkUserPackages {
-          inherit name userPackages;
+          inherit (finalAttrs) name;
+          inherit userPackages;
         };
         # With nixpkgs typstPackages packages
         typst = typst.withPackages typstEnv;
@@ -117,7 +119,7 @@ lib.extendMkDerivation {
       strictDeps = true;
       __structuredAttrs = true;
 
-      nativeBuildInputs = args.nativeBuildInputs or [ ] ++ [ typstWrapped ];
+      nativeBuildInputs = nativeBuildInputs ++ [ typstWrapped ];
 
       typstArgs = [
         "c"
