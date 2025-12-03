@@ -32,6 +32,7 @@ let
       {
         name,
         file ? finalAttrs.name + ".typ",
+        src ? ./documents,
         ...
       }@args:
       {
@@ -198,5 +199,14 @@ in
         }
       ];
     };
+  };
+
+  single-file = mkTest {
+    name = "single-file";
+    src = lib.fileset.toSource {
+      root = ./documents;
+      fileset = ./documents/basic.typ;
+    };
+    file = "basic.typ";
   };
 }
