@@ -13,6 +13,14 @@
 }:
 let
   inherit (lib.asserts) assertMsg;
+
+  # This copies the stripHash algorthim for all intents and purposes
+  stripHash =
+    path:
+    lib.pipe path [
+      builtins.baseNameOf
+      (path: if lib.match "^[a-z0-9]{32}-.*" path == [ ] then lib.substring 33 (-1) path else path)
+    ];
 in
 lib.extendMkDerivation {
   # No need for CC here
@@ -164,6 +172,11 @@ lib.extendMkDerivation {
         (builtins.toString creationTimestamp)
       ]
       ++ [
+        # Set root so adjacent directories can be used
+        # Sandbox looks like `/build/$source-directory-name`
+        "--root"
+        "/build/${stripHash finalAttrs.src}"
+        # Output format
         "-f"
         format
       ];
