@@ -62,12 +62,9 @@ lib.extendMkDerivation {
       # built with `pkgs.buildTypstPackge`. More work on the Nixpkgs side is
       # needed before that.
       userPackages =
-        let
-          inherit (builtins) typeOf;
-        in
         assert assertMsg (
-          typeOf extraPackages == "set"
-        ) "extraPackages must be of type 'AttributeSet List TypstPackage'";
+          lib.isAttrs extraPackages && lib.all lib.isList (lib.attrValues extraPackages)
+        ) "extraPackages must be of type 'AttributeSet (List TypstPackage)'";
         lib.pipe extraPackages [
           (lib.attrsets.mapAttrsToList (
             namespace:
