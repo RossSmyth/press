@@ -163,6 +163,11 @@ in
           (builtins.toString creationTimestamp)
         ]
         ++ [
+          # This allows for files to reference files in adjacent directories.
+          # See the test "project-root"
+          "--root"
+          ("/build/" + (builtins.baseNameOf finalAttrs.src))
+          # Output format
           "-f"
           format
         ];
@@ -172,7 +177,7 @@ in
             runHook preBuild
 
             echo "Calling Typst with 'typst ''${typstArgs[@]}'"
-            typst "''${typstArgs[@]}" --root $PWD $out
+            typst "''${typstArgs[@]}" $out
 
             runHook postBuild
           '';
