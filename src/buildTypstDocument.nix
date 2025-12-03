@@ -8,6 +8,7 @@
   typst,
   mkPackage,
   mkFonts,
+  mkUserPackages,
   wrapTypst,
 }:
 let
@@ -75,10 +76,8 @@ lib.extendMkDerivation {
           inherit fonts name;
         };
         # User-defined Typst packages, not using pkgs.typstPackages
-        userPackages = buildEnv {
-          name = name + "-deps";
-          pathsToLink = [ "/share/typst/packages" ];
-          paths = userPackages;
+        userPackages = mkUserPackages {
+          inherit name userPackages;
         };
         # With nixpkgs typstPackages packages
         typst = typst.withPackages typstEnv;
