@@ -8,6 +8,7 @@
   typst,
   mkPackage,
   mkFonts,
+  wrapTypst,
 }:
 let
   inherit (lib.asserts) assertMsg;
@@ -70,44 +71,26 @@ lib.extendMkDerivation {
         in
         assert assertMsg (
           typeOf extraPackages == "set"
-        ) "extraPackages must be of type AttributeSet[String, List[TypstPackage]]";
+        ) "extraPackages must be of type 'AttributeSet List TypstPackage'";
         lib.attrsets.foldlAttrs (
           pkgs: namespace: paths:
           assert assertMsg (typeOf paths == "list") "the attrset values must be lists of typst packages";
           lib.lists.foldl (accum: src: accum ++ [ (mkPackage { inherit src namespace; }) ]) pkgs paths
         ) [ ] extraPackages;
 
-      # All fonts in nixpkgs should follow this.
-      fontsDrv = mkFonts { inherit fonts name; };
-
-      # Combine all the packages to one drv
-      pkgsDrv = buildEnv {
-        name = name + "-deps";
-        pathsToLink = [ "/share/typst/packages" ];
-        paths = userPackages;
-      };
-      typstUni = typst.withPackages typstEnv;
-
-      # A wrapped Typst compiler, this is needed for
-      # the dev shell
-      typstWrap = stdenvNoCC.mkDerivation {
-        strictDeps = true;
-        dontUnpack = true;
-        dontConfigure = true;
-        dontInstall = true;
-
-        name = "typst-wrapped";
-        buildInputs = [ makeBinaryWrapper ];
-        buildPhase = ''
-          runHook preBuild
-
-          makeWrapper ${lib.getExe typstUni} $out/bin/typst \
-            --prefix TYPST_FONT_PATHS : ${fontsDrv}/share/fonts \
-            --set TYPST_PACKAGE_PATH ${pkgsDrv}/share/typst/packages
-
-          runHook postBuild
-        '';
-        meta.mainProgram = "typst";
+      typstWrapped = wrapTypst {
+        inherit creationTimestamp;
+        fonts = mkFonts {
+          inherit fonts name;
+        };
+        # User-defined Typst packages, not using pkgs.typstPackages
+        userPackages = buildEnv {
+          name = name + "-deps";
+          pathsToLink = [ "/share/typst/packages" ];
+          paths = userPackages;
+        };
+        # With nixpkgs typstPackages packages
+        typst = typst.withPackages typstEnv;
       };
 
       # Put the inputs in the right format
@@ -122,11 +105,13 @@ lib.extendMkDerivation {
       ];
     in
     {
+      inherit (typstWrapped) shellHook;
+
       # The good stuff
       strictDeps = true;
       __structuredAttrs = true;
 
-      nativeBuildInputs = args.nativeBuildInputs or [ ] ++ [ typstWrap ];
+      nativeBuildInputs = args.nativeBuildInputs or [ ] ++ [ typstWrapped ];
 
       typstArgs = [
         "c"
@@ -179,17 +164,8 @@ lib.extendMkDerivation {
           runHook postBuild
         '';
 
-      shellHook = ''
-        export TYPST_PACKAGE_CACHE_PATH="${typstUni}/lib/typst/packages"
-        export TYPST_PACKAGE_PATH="${pkgsDrv}/share/typst/packages"
-        export TYPST_FONT_PATHS="${fontsDrv}/share/fonts"
-        export SOURCE_DATE_EPOCH=${
-          if creationTimestamp != null then builtins.toString creationTimestamp else "315532800"
-        }
-      '';
-
       # Allow the user to access the wrapped Typst compiler
-      passthru.typst-wrapped = typstWrap;
+      passthru.typst-wrapped = typstWrapped;
 
       meta = meta // {
         badPlatforms = meta.badPlatforms or [ ] ++ typst.badPlatforms or [ ];
