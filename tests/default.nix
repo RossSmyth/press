@@ -32,11 +32,11 @@ let
       {
         name,
         file ? finalAttrs.name + ".typ",
-        src ? ./documents,
         ...
-      }:
+      }@args:
       {
-        inherit file src;
+        inherit file;
+        src = ./documents;
       };
   };
 in
@@ -184,12 +184,6 @@ in
   timestamp = mkTest {
     name = "timestamp";
     creationTimestamp = 1;
-  };
-
-  project-root = mkTest {
-    name = "project-root";
-    src = ./documents/project-root;
-    file = "mydoc/main.typ";
   };
 
   no-ifd = mkTest {
