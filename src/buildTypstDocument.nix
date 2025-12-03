@@ -57,6 +57,10 @@ lib.extendMkDerivation {
     let
 
       # Setup all the packages
+      #
+      # TODO: When breaking changes are done, only accept packages that are
+      # built with `pkgs.buildTypstPackge`. More work on the Nixpkgs side is
+      # needed before that.
       userPackages =
         let
           inherit (builtins) typeOf;
@@ -64,29 +68,26 @@ lib.extendMkDerivation {
         assert assertMsg (
           typeOf extraPackages == "set"
         ) "extraPackages must be of type 'AttributeSet List TypstPackage'";
-        lib.attrsets.foldlAttrs (
-          pkgs: namespace: paths:
-          assert assertMsg (typeOf paths == "list") "the attrset values must be lists of typst packages";
-          lib.lists.foldl (
-            accum: args:
-            accum
-            ++ [
-              (
-                # If it has context, it is probably some sort of store path
-                if lib.isStorePath args then
-                  mkPackage {
-                    inherit namespace;
-                    src = args;
-                  }
-                else
-                  mkPackage {
-                    inherit namespace;
-                    inherit (args) src pname version;
-                  }
-              )
-            ]
-          ) pkgs paths
-        ) [ ] extraPackages;
+        lib.pipe extraPackages [
+          (lib.attrsets.mapAttrsToList (
+            namespace:
+            lib.map (
+              args:
+              # Backwards compat for IFD usage
+              if lib.isStorePath args then
+                mkPackage {
+                  inherit namespace;
+                  src = args;
+                }
+              else
+                mkPackage {
+                  inherit namespace;
+                  inherit (args) src pname version;
+                }
+            )
+          ))
+          lib.flatten
+        ];
 
       typstWrapped = wrapTypst {
         inherit creationTimestamp;
