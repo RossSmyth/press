@@ -173,7 +173,7 @@ lib.extendMkDerivation {
           runHook preBuild
 
           echo "Calling Typst with 'typst ''${typstArgs[@]}'"
-          typst "''${typstArgs[@]}" --root $PWD $out
+          typst "''${typstArgs[@]}" $out
 
           runHook postBuild
         '';
