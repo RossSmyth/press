@@ -1,3 +1,3 @@
 final: _: {
-  buildTypstDocument = final.callPackage ./src/builder.nix { };
+  inherit (final.callPackage ./src { }) buildTypstDocument;
 }

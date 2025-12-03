@@ -6,6 +6,8 @@
   applyPatches,
   makeBinaryWrapper,
   typst,
+  mkPackage,
+  mkFonts,
 }:
 let
   inherit (lib.asserts) assertMsg;
@@ -65,8 +67,6 @@ lib.extendMkDerivation {
       userPackages =
         let
           inherit (builtins) typeOf;
-
-          userPack = callPackage ./mkPackage.nix;
         in
         assert assertMsg (
           typeOf extraPackages == "set"
@@ -74,11 +74,11 @@ lib.extendMkDerivation {
         lib.attrsets.foldlAttrs (
           pkgs: namespace: paths:
           assert assertMsg (typeOf paths == "list") "the attrset values must be lists of typst packages";
-          lib.lists.foldl (accum: src: accum ++ [ (userPack { inherit src namespace; }) ]) pkgs paths
+          lib.lists.foldl (accum: src: accum ++ [ (mkPackage { inherit src namespace; }) ]) pkgs paths
         ) [ ] extraPackages;
 
       # All fonts in nixpkgs should follow this.
-      fontsDrv = callPackage ./mkFonts.nix { inherit fonts name; };
+      fontsDrv = mkFonts { inherit fonts name; };
 
       # Combine all the packages to one drv
       pkgsDrv = buildEnv {
