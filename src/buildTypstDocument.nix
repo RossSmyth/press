@@ -55,7 +55,6 @@ lib.extendMkDerivation {
       ...
     }@args:
     let
-
       # Setup all the packages
       #
       # TODO: When breaking changes are done, only accept packages that are
@@ -65,24 +64,33 @@ lib.extendMkDerivation {
         assert assertMsg (
           lib.isAttrs extraPackages && lib.all lib.isList (lib.attrValues extraPackages)
         ) "extraPackages must be of type 'AttributeSet (List TypstPackage)'";
+
         lib.pipe extraPackages [
           (lib.attrsets.mapAttrsToList (
             namespace:
             lib.map (
-              args:
+              pkgSpec:
               # Backwards compat for IFD usage
-              if lib.isStorePath args then
+              if lib.isStorePath pkgSpec then
+                let
+                  manifest = lib.importTOML "${pkgSpec}/typst.toml";
+                in
                 mkPackage {
                   inherit namespace;
-                  src = args;
+                  pname = manifest.package.name or (throw "${pkgSpec}/typst.toml missing package name");
+                  version = manifest.package.version or (throw "${pkgSpec}/typst.toml missing version");
+                  src = pkgSpec;
                 }
               else
-                mkPackage {
-                  inherit namespace;
-                  inherit (args) src pname version;
-                }
+                mkPackage (
+                  {
+                    inherit namespace;
+                  }
+                  // pkgSpec
+                )
             )
           ))
+
           lib.flatten
         ];
 
