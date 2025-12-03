@@ -191,4 +191,18 @@ in
     src = ./documents/project-root;
     file = "mydoc/main.typ";
   };
+
+  no-ifd = mkTest {
+    name = "no-ifd";
+    file = "gitImport.typ";
+    extraPackages = {
+      local = [
+        {
+          pname = "note-me";
+          version = "0.5.0";
+          src = note-me;
+        }
+      ];
+    };
+  };
 }

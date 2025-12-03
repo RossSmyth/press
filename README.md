@@ -83,16 +83,32 @@ pkgs.buildTypstDocument {
 } 
 ```
 Or you can also use them directly, or if you want them in a custom namespace.
+> [!WARNING]
+> If `pname` and `version` are not specified, IFD will be used to determine the name and version.
 
 ```nix
-documents = pkgs.buildTypstDocument {
-  name = "myDoc";
+pkgs.buildTypstDocument {
+  name = myDoc;
   src = ./.;
   extraPackages = {
-    local = [ somePackage anotherPack ];
+    local = [
+      somePackage
+      anotherPack
+    ];
+
     foospace = [ fooPackage ];
+
+    # Can specify the name and version explicitly to avoid IFD.
+    coolspace = [
+      {
+        pname = coolPackage;
+        version = "1.0";
+        src = coolPackage;
+      }
+    ];
   };
-};
+}
+
 ```
 
 If you want to use custom fonts:

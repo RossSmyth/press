@@ -67,7 +67,25 @@ lib.extendMkDerivation {
         lib.attrsets.foldlAttrs (
           pkgs: namespace: paths:
           assert assertMsg (typeOf paths == "list") "the attrset values must be lists of typst packages";
-          lib.lists.foldl (accum: src: accum ++ [ (mkPackage { inherit src namespace; }) ]) pkgs paths
+          lib.lists.foldl (
+            accum: args:
+            accum
+            ++ [
+              (
+                # If it has context, it is probably some sort of store path
+                if lib.isStorePath args then
+                  mkPackage {
+                    inherit namespace;
+                    src = args;
+                  }
+                else
+                  mkPackage {
+                    inherit namespace;
+                    inherit (args) src pname version;
+                  }
+              )
+            ]
+          ) pkgs paths
         ) [ ] extraPackages;
 
       typstWrapped = wrapTypst {

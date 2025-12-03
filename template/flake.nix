@@ -62,9 +62,19 @@
         typstEnv = (p: [ p.note-me ]);
         # [Optional] Any non-universe packages. The attribute key is the namespace.
         # The package must have a typst.toml file in its root.
+        #
         # Default: {}
         extraPackages = {
+          # Does import-from-derivation to determine the name and version
           local = [ unify ];
+          # Does not to IFD, so realization will be faster.
+          namespace = [
+            {
+              pname = "unify";
+              version = "0.7.1";
+              src = unify;
+            }
+          ];
         };
         # [Optional] A timestamp representing the current date when using `datetime.today()`.
         #
