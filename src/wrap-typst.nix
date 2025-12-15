@@ -27,8 +27,12 @@ lib.extendMkDerivation {
       dontConfigure = true;
       dontInstall = true;
 
-      name = "typst-wrapped";
-      buildInputs = [ makeBinaryWrapper ];
+      name = typst.name + "-wrapped";
+      # TODO: Uncomment when possible to
+      #pname = typst.pname + "-wrapped";
+      #inherit (typst) version;
+      
+      nativeBuildInputs = [ makeBinaryWrapper ];
       buildPhase = ''
         runHook preBuild
 
@@ -36,6 +40,8 @@ lib.extendMkDerivation {
           --prefix TYPST_FONT_PATHS : ${fonts}/share/fonts \
           --set TYPST_PACKAGE_PATH ${userPackages}/share/typst/packages
 
+        ln -s "${typst}/share" "$out/share"
+        
         runHook postBuild
       '';
 
