@@ -59,7 +59,7 @@ lib.extendMkDerivation {
       pdfTags ? true,
       pngPpi ? null,
       pdfStandards ? [ ],
-      nativeBuildInputs ? [ ],
+      depsBuildBuild ? [ ],
       ...
     }@args:
     let
@@ -138,7 +138,9 @@ lib.extendMkDerivation {
       strictDeps = true;
       __structuredAttrs = true;
 
-      nativeBuildInputs = nativeBuildInputs ++ [ typstWrapped ];
+      # Typst should always use pkgsBuildBuild because
+      # it's a PDF. We aren't doing anything crazy.
+      depsBuildBuild = depsBuildBuild ++ [ typstWrapped ];
 
       typstArgs = [
         "c"
