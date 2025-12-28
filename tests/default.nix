@@ -47,7 +47,7 @@ in
 
   imports = mkTest {
     name = "import";
-    typstEnv = p: [ p.note-me ];
+    typstEnv = p: [ p.note-me_0_5_0 ];
   };
 
   fonts = mkTest {
