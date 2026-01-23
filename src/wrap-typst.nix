@@ -48,7 +48,7 @@ lib.extendMkDerivation {
       shellHook = ''
         export TYPST_PACKAGE_CACHE_PATH="${typst}/lib/typst/packages"
         export TYPST_PACKAGE_PATH="${userPackages}/share/typst/packages"
-        export TYPST_FONT_PATHS="${fonts}/share/fonts"
+        export TYPST_FONT_PATHS="''${TYPST_FONT_PATHS:+$TYPST_FONT_PATHS:}${fonts}/share/fonts"
         export SOURCE_DATE_EPOCH=${
           if creationTimestamp != null then builtins.toString creationTimestamp else "315532800"
         }
