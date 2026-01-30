@@ -31,6 +31,12 @@
         inherit system;
         overlays = [ (import press) ];
       };
+
+      fs = pkgs.lib.fileset;
+
+      files = fs.unions [
+        ./main.typ
+      ];
     in
     {
       packages.${system}.default = pkgs.buildTypstDocument {
@@ -38,7 +44,10 @@
         # Default: ${pname}-${version}
         name = "example";
         # Source directory to copy to the store.
-        src = ./.;
+        src = fs.toSource {
+          root = ./.;
+          fileset = files;
+        };
         # [Optional] The entry-point to the document, default is "main.typ"
         # This is relative to the directory input above.
         # Default: "main.typ"
@@ -59,7 +68,7 @@
         # https://nixos.org/manual/nixpkgs/unstable/#typst
         #
         # Default: (_: [])
-        typstEnv = (p: [ p.note-me ]);
+        typstEnv = (p: [ p.note-me_0_5_0 ]);
         # [Optional] Any non-universe packages. The attribute key is the namespace.
         # The package must have a typst.toml file in its root.
         #
