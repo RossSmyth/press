@@ -1,11 +1,11 @@
 {
   lib,
-  pkgsBuildBuild,
   callPackage,
   buildEnv,
   stdenvNoCC,
   applyPatches,
   makeBinaryWrapper,
+  typst,
   mkPackage,
   mkFonts,
   mkUserPackages,
@@ -59,7 +59,7 @@ lib.extendMkDerivation {
       pdfTags ? true,
       pngPpi ? null,
       pdfStandards ? [ ],
-      depsBuildBuild ? [ ],
+      nativeBuildInputs ? [ ],
       ...
     }@args:
     let
@@ -117,7 +117,7 @@ lib.extendMkDerivation {
         # Typst does not have target, so we just use the build platform's Typst so
         # it never tries to do anything weird like fail to build a PDF when targeting
         # something.
-        typst = pkgsBuildBuild.typst.withPackages typstEnv;
+        typst = typst.withPackages typstEnv;
       };
 
       # Put the inputs in the right format
@@ -138,9 +138,9 @@ lib.extendMkDerivation {
       strictDeps = true;
       __structuredAttrs = true;
 
-      # Typst should always use pkgsBuildBuild because
+      # Typst should always use because
       # it's a PDF. We aren't doing anything crazy.
-      depsBuildBuild = depsBuildBuild ++ [ typstWrapped ];
+      nativeBuildInputs = nativeBuildInputs ++ [ typstWrapped ];
 
       typstArgs = [
         "c"
