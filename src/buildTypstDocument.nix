@@ -187,7 +187,7 @@ lib.extendMkDerivation {
         args.buildPhase or ''
           runHook preBuild
 
-          echo "Calling Typst with 'typst ''${typstArgs[@]}'"
+          echoCmd "buildTypstDocument typstArgs" "''${typstArgs[@]}"
           typst "''${typstArgs[@]}" $out
 
           runHook postBuild
