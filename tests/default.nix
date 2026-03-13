@@ -1,14 +1,22 @@
-{
-  lib,
-  buildTypstDocument,
-  fetchFromGitHub,
-  fira-code,
-  inconsolata,
-  ripgrep,
-  qpdf,
-  imagemagick,
-}:
 let
+  inputs = import ./npins { };
+  pkgs = import inputs.nixpkgs {
+    system = builtins.currentSystem or "x86_64-linux";
+    overlays = [
+      (import ../.)
+    ];
+  };
+  inherit (pkgs)
+    lib
+    buildTypstDocument
+    fetchFromGitHub
+    fira-code
+    inconsolata
+    ripgrep
+    qpdf
+    imagemagick
+    ;
+
   note-me = fetchTree {
     type = "github";
     narHash = "sha256-Bpmdt59Tt4DNBg8G435xccH/W3aYSK+EuaU2ph2uYTY=";
