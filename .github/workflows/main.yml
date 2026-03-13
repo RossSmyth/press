@@ -49,4 +49,4 @@ jobs:
 
       - name: Run ${{ matrix.check }} 📋
         run: |
-          nix build tests "${{ matrix.check }}" -L --show-trace
+          nix build -f tests "${{ matrix.check }}" -L --show-trace
