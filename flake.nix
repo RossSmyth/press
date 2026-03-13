@@ -16,6 +16,14 @@
       templates.default = {
         path = ./template;
         description = "A basic template using Press";
+        welcomeText = ''
+          # Getting started
+          - run `npins init`
+          - run `npins add github RossSmyth press --branch main`
+          - run `npins add github ChHecker unify --branch main`
+
+          Enjoy!
+        '';
       };
     };
 }
