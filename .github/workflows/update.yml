@@ -16,12 +16,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
-        with:
-          nix_on_tmpfs: true
+        uses: cachix/install-nix-action@master
 
-      - name: Update flake.lock
-        run: nix flake update -L --show-trace
+      - name: Update test pins
+        run: |
+          nix run nixpkgs#npins -- --directory ./tests/npins update
 
       - name: Commit Changes
         id: commit
@@ -29,12 +28,12 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add flake.lock
+          git add tests/npins
           git commit -m "[Automated] bump lockfile"
 
       - name: Test Changes
         if: steps.commit.outcome == 'success'
-        run: nix flake check -L --show-trace
+        run: nix build -f tests -L --show-trace
 
       - name: Push changes
         if: steps.commit.outcome == 'success'
