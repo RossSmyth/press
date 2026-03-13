@@ -23,7 +23,7 @@ jobs:
       - name: Calculate Check 🖩
         id: calc-matrix
         run: |
-          matrix=$(nix eval -f tests --apply "builtins.attrNames" -L --show-trace --json --read-only | jq -c '.checks."x86_64-linux"|keys_unsorted')
+          matrix="$(nix eval -f tests --apply "builtins.attrNames" -L --show-trace --json --read-only)"
           echo "Matrix: $matrix"
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
