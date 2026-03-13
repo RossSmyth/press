@@ -25,5 +25,10 @@
           Enjoy!
         '';
       };
+
+      templates.flake = {
+        path = ./flakeTemplate;
+        description = "flake template";
+      };
     };
 }
