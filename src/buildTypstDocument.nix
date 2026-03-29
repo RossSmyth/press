@@ -175,9 +175,8 @@ lib.extendMkDerivation {
       ]
       ++ [
         # Set root so adjacent directories can be used
-        # Sandbox looks like `/build/$source-directory-name`
         "--root"
-        "/build/${stripHash finalAttrs.src}"
+        "."
         # Output format
         "-f"
         format
