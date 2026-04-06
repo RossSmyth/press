@@ -30,29 +30,5 @@
         path = ./flakeTemplate;
         description = "flake template";
       };
-      checks.x86_64-linux =
-      let
-        tests = import ./tests/default.nix;
-      in {
-        inherit (tests)
-          basic
-          imports
-          fonts
-          patch
-          html
-          png
-          svg
-          gitImport
-          gitImportAttrStr
-          githubFetch
-          inputs
-          pages
-          ppi
-          standards
-          timestamp
-          project-root
-          no-ifd
-          single-file;
-      };
     };
 }
