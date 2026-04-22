@@ -1,10 +1,23 @@
 {
+  lib,
   buildEnv,
-  name,
-  userPackages,
 }:
-buildEnv {
-  name = name + "-deps";
-  pathsToLink = [ "/share/typst/packages" ];
-  paths = userPackages;
+lib.extendMkDerivation {
+  constructDrv = buildEnv;
+  excludeDrvArgNames = [
+    "userPackages"
+  ];
+
+  extendDrvArgs =
+    finalAttrs:
+    {
+      userPackages,
+      pname,
+      version,
+    }:
+    {
+      name = pname + version + "-fonts";
+      pathsToLink = [ "/share/typst/packages" ];
+      paths = userPackages;
+    };
 }

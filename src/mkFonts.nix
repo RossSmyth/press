@@ -1,10 +1,22 @@
 {
-  fonts,
-  name,
-
+  lib,
   buildEnv,
 }:
-buildEnv {
-  name = name + "-fonts";
-  paths = fonts;
+lib.extendMkDerivation {
+  constructDrv = buildEnv;
+  excludeDrvArgNames = [
+    "fonts"
+  ];
+
+  extendDrvArgs =
+    finalAttrs:
+    {
+      fonts,
+      pname,
+      version,
+    }:
+    {
+      name = pname + version + "-fonts";
+      paths = fonts;
+    };
 }

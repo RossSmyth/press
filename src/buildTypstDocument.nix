@@ -105,12 +105,14 @@ lib.extendMkDerivation {
       typstWrapped = wrapTypst {
         inherit creationTimestamp;
         fonts = mkFonts {
-          inherit (finalAttrs) name;
+          pname = finalAttrs.name;
+          version = finalAttrs.version or "none";
           inherit fonts;
         };
         # User-defined Typst packages, not using pkgs.typstPackages
         userPackages = mkUserPackages {
-          inherit (finalAttrs) name;
+          pname = finalAttrs.name;
+          version = finalAttrs.version or "none";
           inherit userPackages;
         };
         # With nixpkgs typstPackages packages
