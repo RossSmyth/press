@@ -62,6 +62,9 @@ lib.extendMkDerivation {
       nativeBuildInputs ? [ ],
       ...
     }@args:
+    assert lib.warnIfNot (
+      (args ? pname) && (args ? version)
+    ) "With Nixpkgs 26.11 Press will require both the pname and version attributes" true;
     let
       # Setup all the packages
       #
@@ -105,13 +108,13 @@ lib.extendMkDerivation {
       typstWrapped = wrapTypst {
         inherit creationTimestamp;
         fonts = mkFonts {
-          pname = finalAttrs.name;
+          pname = finalAttrs.pname or finalAttrs.name;
           version = finalAttrs.version or "none";
           inherit fonts;
         };
         # User-defined Typst packages, not using pkgs.typstPackages
         userPackages = mkUserPackages {
-          pname = finalAttrs.name;
+          pname = finalAttrs.pname or finalAttrs.name;
           version = finalAttrs.version or "none";
           inherit userPackages;
         };

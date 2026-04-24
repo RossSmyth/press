@@ -35,15 +35,21 @@ let
   mkTest = lib.extendMkDerivation {
     constructDrv = buildTypstDocument;
 
+    excludeDrvArgNames = [
+      "name"
+    ];
+
     extendDrvArgs =
       finalAttrs:
       {
         name,
-        file ? finalAttrs.name + ".typ",
+        file ? name + ".typ",
         src ? ./documents,
         ...
       }:
       {
+        pname = name + "-test";
+        version = "none";
         inherit file src;
       };
   };
