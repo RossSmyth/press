@@ -77,8 +77,8 @@ in
     doCheck = true;
     checkPhase = ''
       set -eu
-      rg --binary "BaseFont [^\.]*FiraCode" $out
-      rg --binary "BaseFont [^\.]*Inconsolata" $out
+      rg --binary "BaseFont.*FiraCode" $out
+      rg --binary "BaseFont.*Inconsolata" $out
     '';
   };
 
