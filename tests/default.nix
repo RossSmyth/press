@@ -175,10 +175,20 @@ in
       "3-6"
     ];
     doCheck = true;
-    nativeCheckInputs = [ pdfcpu ];
+    nativeCheckInputs = [
+      writableTmpDirAsHomeHook
+      pdfcpu
+      jq
+    ];
     checkPhase = ''
-      numPages=$(qpdf --show-npages "$out")
-      if [[ $numPages != "5" ]]; then
+      set -eu
+
+      pdfcpu version
+
+      cp "$out" out.pdf
+
+      pdfcpu info --fonts --json out.pdf | jq '.infos[0].pageCount'
+      if [[ "$(pdfcpu info --fonts --json out.pdf | jq '.infos[0].pageCount')" -ne 5 ]]; then
         echo "Number of pages detected: $numPages"
         exit 1
       fi
