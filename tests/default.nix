@@ -12,8 +12,10 @@ let
     fetchFromGitHub
     fira-code
     inconsolata
+    pdfcpu
+    jq
+    writableTmpDirAsHomeHook
     ripgrep
-    qpdf
     imagemagick
     ;
 
@@ -73,12 +75,21 @@ in
 
     nativeCheckInputs = [
       ripgrep
+      jq
+      pdfcpu
+      writableTmpDirAsHomeHook
     ];
     doCheck = true;
     checkPhase = ''
       set -eu
-      rg --binary "BaseFont.*FiraCode" $out
-      rg --binary "BaseFont.*Inconsolata" $out
+      # pdfpcu requires a .pdf extension for now
+      # And you must run it once first so that it does some useless things otherwise it outputs junk json
+      cp "$out" out.pdf
+      pdfcpu version
+
+      pdfcpu --offline info --fonts --json out.pdf | jq '.infos[0].fonts.[].name'
+      pdfcpu --offline info --fonts --json out.pdf | jq '.infos[0].fonts.[].name' | rg FiraCode
+      pdfcpu --offline info --fonts --json out.pdf | jq '.infos[0].fonts.[].name' | rg Inconsolata
     '';
   };
 
@@ -164,7 +175,7 @@ in
       "3-6"
     ];
     doCheck = true;
-    nativeCheckInputs = [ qpdf ];
+    nativeCheckInputs = [ pdfcpu ];
     checkPhase = ''
       numPages=$(qpdf --show-npages "$out")
       if [[ $numPages != "5" ]]; then
