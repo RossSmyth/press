@@ -4,7 +4,7 @@ on:
 
 jobs:
   calc-matrix:
-    name: Find Checks 🔍
+    name: Run checks
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.calc-matrix.outputs.matrix }}
@@ -12,41 +12,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Install Nix ❄️
-        uses: nixbuild/nix-quick-install-action@v35
-        with:
-          nix_on_tmpfs: true
-
-      - name: Calculate Check 🖩
-        id: calc-matrix
-        run: |
-          matrix="$(nix eval -f tests --apply "builtins.attrNames" -L --show-trace --json --read-only)"
-          echo "Matrix: $matrix"
-          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
-
-  checks:
-    needs: calc-matrix
-    strategy:
-      fail-fast: false
-      matrix:
-        check: ${{ fromJson(needs.calc-matrix.outputs.matrix) }}
-    runs-on: ubuntu-latest
-    name: Check/${{ matrix.check }} 🤔
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
 
       - name: Install Nix ❄️
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run ${{ matrix.check }} 📋
+      - name: Run checks
         run: |
-          nix build -f tests "${{ matrix.check }}" -L --show-trace
+          nix run nixpkgs#nix-fast-build -- --file tests
