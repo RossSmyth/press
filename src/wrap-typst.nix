@@ -50,11 +50,11 @@ lib.extendMkDerivation {
         export TYPST_PACKAGE_PATH="${userPackages}/share/typst/packages"
         export TYPST_FONT_PATHS="''${TYPST_FONT_PATHS:+$TYPST_FONT_PATHS:}${fonts}/share/fonts"
         export SOURCE_DATE_EPOCH=${
-          if creationTimestamp != null then builtins.toString creationTimestamp else "315532800"
+          if creationTimestamp != null then toString creationTimestamp else "315532800"
         }
       '';
 
       # Use the base Typst's meta block, but use this Typst's position.
-      meta = builtins.removeAttrs typst.meta [ "position" ];
+      meta = removeAttrs typst.meta [ "position" ];
     };
 }

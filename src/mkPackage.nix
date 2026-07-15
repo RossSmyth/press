@@ -19,7 +19,7 @@ lib.extendMkDerivation {
       src,
       namespace ? "local",
       meta ? { },
-    }@args:
+    }:
     {
       __structuredAttrs = true;
 

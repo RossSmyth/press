@@ -1,10 +1,6 @@
 {
   lib,
-  callPackage,
-  buildEnv,
   stdenvNoCC,
-  applyPatches,
-  makeBinaryWrapper,
   typst,
   mkPackage,
   mkFonts,
@@ -13,14 +9,6 @@
 }:
 let
   inherit (lib.asserts) assertMsg;
-
-  # This copies the stripHash algorthim for all intents and purposes
-  stripHash =
-    path:
-    lib.pipe path [
-      builtins.baseNameOf
-      (path: if lib.match "^[a-z0-9]{32}-.*" path == [ ] then lib.substring 33 (-1) path else path)
-    ];
 in
 lib.extendMkDerivation {
   # No need for CC here
@@ -172,7 +160,7 @@ lib.extendMkDerivation {
       ]
       ++ lib.optionals (pngPpi != null) [
         "--ppi"
-        (builtins.toString pngPpi)
+        (toString pngPpi)
       ]
       ++ lib.optionals (pdfStandards != [ ]) [
         "--pdf-standard"
@@ -180,7 +168,7 @@ lib.extendMkDerivation {
       ]
       ++ lib.optionals (creationTimestamp != null) [
         "--creation-timestamp"
-        (builtins.toString creationTimestamp)
+        (toString creationTimestamp)
       ]
       ++ [
         # Set root so adjacent directories can be used
