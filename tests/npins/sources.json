@@ -6,6 +6,20 @@
       "artifact": "nixexprs.tar.xz",
       "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1032970.716c7a2664ca/nixexprs.tar.xz",
       "hash": "sha256-MMD52/T3QOqSB2V1UZgp4dw0pa4P89YEP5SbM2xuwa0="
+    },
+    "weby": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "wylited",
+        "repo": "weby"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "265d95fd8bffd5c18d2c1a10d7d7917db70565cb",
+      "url": "https://github.com/wylited/weby/archive/265d95fd8bffd5c18d2c1a10d7d7917db70565cb.tar.gz",
+      "hash": "sha256-0Ob+mRNFpUkqMux7PdOKzv98hYPRgh5A6+W1//RXPBA=",
+      "frozen": true
     }
   },
   "version": 8

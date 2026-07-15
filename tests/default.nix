@@ -249,4 +249,30 @@ in
     };
     file = "basic.typ";
   };
+
+  bundles = mkTest {
+    name = "bundles";
+
+    src = inputs.weby;
+
+    file = "index.typ";
+
+    format = "bundle";
+    typstEnv = p: [
+      p.cetz_0_4_2
+      p.commute_0_3_0
+      p.oxifmt_1_0_0
+    ];
+
+    doCheck = true;
+    checkPhase = ''
+      if [[ -f "$out/index.html" ]]; then
+        echo ":)"
+      else
+        echo ":("
+        echo 'Missing $out/index.html'
+        exit 1
+      fi
+    '';
+  };
 }

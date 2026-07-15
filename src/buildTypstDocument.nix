@@ -158,6 +158,10 @@ lib.extendMkDerivation {
         "--features"
         "html"
       ]
+      ++ lib.optionals (format == "bundle") [
+        "--features"
+        "bundle,html"
+      ]
       ++ typstInputs
       ++ lib.optionals (pages != [ ]) [
         "--pages"
