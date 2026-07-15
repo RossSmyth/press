@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Nix
-        uses: cachix/install-nix-action@master
+        uses: cachix/install-nix-action@31
 
       - name: Update test pins
         run: |
