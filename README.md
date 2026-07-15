@@ -137,3 +137,50 @@ Where `local` is the package namespace, and `somePackage` is a store path that h
 You can put packages in whatever namespace you want, not just local.
 
 See the [template](./template/flake.nix) for more API details.
+
+## Recipes
+
+### Embedding a Git commit hash
+
+Press's `inputs` maps onto Typst's `sys.inputs`, so you can pass values
+in from the flake:
+
+```nix
+document = pkgs.buildTypstDocument {
+  name = "myDoc";
+  src = ./.;
+  inputs = {
+    "git-hash" = self.rev or self.dirtyRev or "unknown";
+  };
+  creationTimestamp = self.lastModified;
+};
+```
+
+`creationTimestamp` sets `SOURCE_DATE_EPOCH`, which `datetime.today()`
+respects, so the commit date is available in your document and stays
+reproducible:
+
+```typ
+#set document(
+  title: "My Document",
+  author: "Jane Doe",
+  date: datetime.today(),
+)
+```
+
+The commit hash can now be attached as a file with
+[`pdf.attach`](https://typst.app/docs/reference/pdf/attach/):
+
+```typ
+#let commit = sys.inputs.at("git-hash", default: none)
+
+#if commit != none {
+  pdf.attach(
+    "build-info.json",
+    bytes(json.encode((commit: commit))),
+    relationship: "source",
+    mime-type: "application/json",
+    description: "Git commit this document was built from",
+  )
+}
+```
