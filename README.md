@@ -138,7 +138,7 @@ You can put packages in whatever namespace you want, not just local.
 
 See the [template](./template/flake.nix) for more API details.
 
-## Recipes
+## Examples
 
 ### Embedding a Git commit hash
 
