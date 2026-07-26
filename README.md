@@ -54,6 +54,9 @@ document = pkgs.buildTypstDocument {
 };
 ```
 
+Only list the packages your document imports directly; their dependencies are
+resolved and added to the environment for you.
+
 
 If you want to use a non-Universe package:
 
