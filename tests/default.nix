@@ -66,6 +66,12 @@ in
     typstEnv = p: [ p.note-me_0_5_0 ];
   };
 
+  transitiveImports = mkTest {
+    name = "transitiveImport";
+    # fletcher -> cetz -> oxifmt, so only the closure of this makes it build
+    typstEnv = p: [ p.fletcher_0_5_8 ];
+  };
+
   fonts = mkTest {
     name = "fonts";
     fonts = [

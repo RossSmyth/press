@@ -9,6 +9,27 @@
 }:
 let
   inherit (lib.asserts) assertMsg;
+
+  # `typst.withPackages` only links each requested package's *direct*
+  # `typstDeps` into the environment. Anything deeper in the graph
+  # (e.g. fletcher -> cetz -> oxifmt) is left out, so Typst falls back to
+  # fetching it over the network at build time, which fails in the sandbox
+  # with "failed to download package (OpenSSL error)".
+  #
+  # So resolve the whole dependency closure here instead.
+  closureItem = pkg: {
+    key = pkg.outPath;
+    value = pkg;
+  };
+
+  typstClosure =
+    packages:
+    lib.map (item: item.value) (
+      builtins.genericClosure {
+        startSet = lib.map closureItem packages;
+        operator = item: lib.map closureItem (item.value.typstDeps or [ ]);
+      }
+    );
 in
 lib.extendMkDerivation {
   # No need for CC here
@@ -110,7 +131,7 @@ lib.extendMkDerivation {
         # Typst does not have target, so we just use the build platform's Typst so
         # it never tries to do anything weird like fail to build a PDF when targeting
         # something.
-        typst = typst.withPackages typstEnv;
+        typst = typst.withPackages (typstPkgs: typstClosure (typstEnv typstPkgs));
       };
 
       # Put the inputs in the right format
