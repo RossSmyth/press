@@ -4,8 +4,8 @@
       "type": "Channel",
       "name": "nixpkgs-unstable",
       "artifact": "nixexprs.tar.xz",
-      "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1048658.70ce23431213/nixexprs.tar.xz",
-      "hash": "sha256-7UJK0pRtDvDUfAMLP1bQDxXg6iDI30dGQQQCPtQVzgM="
+      "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1053303.6b5e5b7a6631/nixexprs.tar.xz",
+      "hash": "sha256-NebGpEUD7MV7GWfUhDErp7imOKX2rFSUDtqkO5ryJ/o="
     },
     "weby": {
       "type": "Git",
