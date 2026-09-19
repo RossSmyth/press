@@ -10,6 +10,7 @@ let
     lib
     buildTypstDocument
     fetchFromGitHub
+    writeClosure
     fira-code
     inconsolata
     pdfcpu
@@ -66,11 +67,23 @@ in
     typstEnv = p: [ p.note-me_0_5_0 ];
   };
 
-  transitiveImports = mkTest {
+  transitiveImports = mkTest (finalAttrs: {
     name = "transitiveImport";
     # fletcher -> cetz -> oxifmt, so only the closure of this makes it build
     typstEnv = p: [ p.fletcher_0_5_8 ];
-  };
+
+    closureFile = writeClosure [ finalAttrs.finalPackage.typst-wrapped ];
+
+    nativeCheckInputs = [
+      ripgrep
+    ];
+
+    doCheck = true;
+    checkPhase = ''
+      cat "$closureFile"
+      rg oxifmt "$closureFile"
+    '';
+  });
 
   fonts = mkTest {
     name = "fonts";
