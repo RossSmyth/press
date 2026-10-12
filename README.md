@@ -67,7 +67,7 @@ pkgs = import nixpkgs {
   overlays = [
     (import press)
     (final: prev:
-      typstPackages = prev.typstPackages.extend (finalTypst: _: {
+      typstPackages = prev.typstPackages.overrideScope (finalTypst: _: {
         cool-package = final.buildTypstPackage {
           pname = "cool-package";
           version = "1.0";
